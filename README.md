@@ -10,7 +10,7 @@ A collection of simple scripts for VPS management, designed to streamline common
 ### Scripts
 
 - **quick-zsh-setup.sh**: Quickly install and configure Zsh, Oh My Zsh, and useful plugins (autosuggestions, syntax highlighting) on your VPS.
-- *(More scripts coming soon, e.g., Swap management)*
+- **swap-manager.sh**: Easily manage swap space (view, add, delete) on your VPS.
 
 ### Usage
 
@@ -19,8 +19,14 @@ Clone the repository and run the desired script:
 ```bash
 git clone https://github.com/Impersonality/VPS-Toolkit.git
 cd VPS-Toolkit
+
+# For Zsh setup
 chmod +x quick-zsh-setup.sh
 ./quick-zsh-setup.sh
+
+# For Swap management
+chmod +x swap-manager.sh
+./swap-manager.sh
 ```
 
 ---
@@ -33,7 +39,7 @@ chmod +x quick-zsh-setup.sh
 ### 脚本列表
 
 - **quick-zsh-setup.sh**: 快速在 VPS 上安装并配置 Zsh、Oh My Zsh 以及常用插件（自动建议、语法高亮）。
-- *(更多脚本即将推出，例如 Swap 管理等)*
+- **swap-manager.sh**: 轻松管理 VPS 上的 Swap 空间（查看、添加、删除）。
 
 ### 使用方法
 
@@ -42,6 +48,12 @@ chmod +x quick-zsh-setup.sh
 ```bash
 git clone https://github.com/Impersonality/VPS-Toolkit.git
 cd VPS-Toolkit
+
+# Zsh 安装
 chmod +x quick-zsh-setup.sh
 ./quick-zsh-setup.sh
+
+# Swap 管理
+chmod +x swap-manager.sh
+./swap-manager.sh
 ```
