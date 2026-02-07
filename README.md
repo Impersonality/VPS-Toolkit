@@ -14,6 +14,22 @@ A collection of simple scripts for VPS management, designed to streamline common
 
 ### Usage
 
+#### Option 1: One-line Installation (Recommended)
+
+Run the script directly without downloading the repository:
+
+**Quick Zsh Setup:**
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/quick-zsh-setup.sh)
+```
+
+**Swap Manager:**
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
+```
+
+#### Option 2: Clone & Run
+
 Clone the repository and run the desired script:
 
 ```bash
@@ -42,6 +58,22 @@ chmod +x swap-manager.sh
 - **swap-manager.sh**: 轻松管理 VPS 上的 Swap 空间（查看、添加、删除）。
 
 ### 使用方法
+
+#### 方式 1：一键运行（推荐）
+
+无需下载整个项目，直接运行脚本：
+
+**Zsh 快速安装：**
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/quick-zsh-setup.sh)
+```
+
+**Swap 管理：**
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
+```
+
+#### 方式 2：克隆仓库并运行
 
 克隆仓库并运行相应的脚本：
 
