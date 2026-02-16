@@ -46,11 +46,15 @@ select_key() {
 
   i=1
   echo "$keys" | while IFS= read -r line; do
-    # 显示类型和注释（用户标识），如 ssh-rsa administrator@DESKTOP-xxx
     key_type="$(echo "$line" | awk '{print $1}')"
-    comment="$(echo "$line" | awk '{print $NF}')"
-    if [ "$comment" = "$key_type" ] || [ -z "$comment" ]; then
-      comment="(无注释)"
+    nf="$(echo "$line" | awk '{print NF}')"
+    if [ "$nf" -gt 2 ]; then
+      # 有注释字段，显示第 3 个字段起的所有内容
+      comment="$(echo "$line" | awk '{for(i=3;i<=NF;i++) printf "%s ", $i}')"
+    else
+      # 无注释，显示 key 末尾 12 个字符用于辨识
+      tail="$(echo "$line" | awk '{print substr($2, length($2)-11)}')"
+      comment="...${tail}"
     fi
     printf "  %d) %s  %s\n" "$i" "$key_type" "$comment"
     i=$((i + 1))
