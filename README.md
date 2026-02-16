@@ -11,6 +11,7 @@ A collection of simple scripts for VPS management, designed to streamline common
 
 - **quick-zsh-setup.sh**: Quickly install and configure Zsh, Oh My Zsh, and useful plugins (autosuggestions, syntax highlighting) on your VPS.
 - **swap-manager.sh**: Easily manage swap space (view, add, delete) on your VPS.
+- **ssh-key-setup.sh**: Fetch SSH public keys from GitHub, add them to `authorized_keys`, and enable SSH key authentication on your VPS.
 
 ### Usage
 
@@ -28,6 +29,11 @@ bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
 ```
 
+**SSH Key Setup:**
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/ssh-key-setup.sh)
+```
+
 #### Option 2: Clone & Run
 
 Clone the repository and run the desired script:
@@ -43,6 +49,10 @@ chmod +x quick-zsh-setup.sh
 # For Swap management
 chmod +x swap-manager.sh
 ./swap-manager.sh
+
+# For SSH key setup
+chmod +x ssh-key-setup.sh
+sudo ./ssh-key-setup.sh
 ```
 
 ---
@@ -56,6 +66,7 @@ chmod +x swap-manager.sh
 
 - **quick-zsh-setup.sh**: 快速在 VPS 上安装并配置 Zsh、Oh My Zsh 以及常用插件（自动建议、语法高亮）。
 - **swap-manager.sh**: 轻松管理 VPS 上的 Swap 空间（查看、添加、删除）。
+- **ssh-key-setup.sh**: 从 GitHub 获取 SSH 公钥，添加到 `authorized_keys`，并启用 SSH 密钥登录。
 
 ### 使用方法
 
@@ -73,6 +84,11 @@ bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
 ```
 
+**SSH 密钥配置：**
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/ssh-key-setup.sh)
+```
+
 #### 方式 2：克隆仓库并运行
 
 克隆仓库并运行相应的脚本：
@@ -88,4 +104,8 @@ chmod +x quick-zsh-setup.sh
 # Swap 管理
 chmod +x swap-manager.sh
 ./swap-manager.sh
+
+# SSH 密钥配置
+chmod +x ssh-key-setup.sh
+sudo ./ssh-key-setup.sh
 ```
