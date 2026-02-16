@@ -46,9 +46,13 @@ select_key() {
 
   i=1
   echo "$keys" | while IFS= read -r line; do
-    # 只显示类型和前 30 个字符，避免屏幕刷屏
-    short="$(echo "$line" | awk '{printf "%s %s", $1, substr($2,1,30)}')"
-    printf "  %d) %s...\n" "$i" "$short"
+    # 显示类型和注释（用户标识），如 ssh-rsa administrator@DESKTOP-xxx
+    key_type="$(echo "$line" | awk '{print $1}')"
+    comment="$(echo "$line" | awk '{print $NF}')"
+    if [ "$comment" = "$key_type" ] || [ -z "$comment" ]; then
+      comment="(无注释)"
+    fi
+    printf "  %d) %s  %s\n" "$i" "$key_type" "$comment"
     i=$((i + 1))
   done
 
