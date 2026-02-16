@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+GITHUB_USER="Impersonality"
+
 # ── 日志 ──────────────────────────────────────────────
 log()  { printf '\033[1;32m[+] %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m[!] %s\033[0m\n' "$*"; }
@@ -167,14 +169,9 @@ main() {
   require_root
   require_cmd curl
 
-  printf "请输入 GitHub 用户名："
-  read -r gh_user
+  log "GitHub 用户：$GITHUB_USER"
 
-  if [ -z "$gh_user" ]; then
-    die "用户名不能为空。"
-  fi
-
-  keys="$(fetch_keys "$gh_user")"
+  keys="$(fetch_keys "$GITHUB_USER")"
   select_key "$keys"
   install_keys
   enable_pubkey_auth
