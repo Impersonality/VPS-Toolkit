@@ -18,8 +18,6 @@ A collection of simple scripts for VPS management, designed to streamline common
 
 ### Usage
 
-#### Option 1: One-line Installation (Recommended)
-
 Run the unified toolkit menu with a single command:
 
 ```bash
@@ -28,56 +26,19 @@ bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/
 
 Or run individual scripts directly:
 
-**Quick Zsh Setup:**
 ```bash
+# Quick Zsh Setup
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/quick-zsh-setup.sh)
-```
 
-**Swap Manager:**
-```bash
+# Swap Manager
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
-```
 
-**SSH Key Setup:**
-```bash
+# SSH Key Setup
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/ssh-key-setup.sh)
-```
 
-**Speedtest Install:**
-```bash
+# Speedtest Install
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/speedtest-install.sh)
-```
 
-**Rclone Setup:**
-```bash
+# Rclone Setup
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/rclone-setup.sh)
-```
-
-#### Option 2: Clone & Run
-
-Clone the repository and run the desired script:
-
-```bash
-git clone https://github.com/Impersonality/VPS-Toolkit.git
-cd VPS-Toolkit
-
-# For Zsh setup
-chmod +x quick-zsh-setup.sh
-./quick-zsh-setup.sh
-
-# For Swap management
-chmod +x swap-manager.sh
-./swap-manager.sh
-
-# For SSH key setup
-chmod +x ssh-key-setup.sh
-sudo ./ssh-key-setup.sh
-
-# For Speedtest install
-chmod +x speedtest-install.sh
-sudo ./speedtest-install.sh
-
-# For Rclone setup
-chmod +x rclone-setup.sh
-sudo ./rclone-setup.sh
 ```

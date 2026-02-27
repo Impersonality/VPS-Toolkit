@@ -17,8 +17,6 @@
 
 ### 使用方法
 
-#### 方式 1：一键运行（推荐）
-
 运行统一菜单入口，一条命令搞定：
 
 ```bash
@@ -27,56 +25,19 @@ bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/
 
 也可以单独运行各脚本：
 
-**Zsh 快速安装：**
 ```bash
+# Zsh 快速安装
 bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/quick-zsh-setup.sh)
-```
-
-**Swap 管理：**
-```bash
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
-```
-
-**SSH 密钥配置：**
-```bash
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/ssh-key-setup.sh)
-```
-
-**Speedtest 测速安装：**
-```bash
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/speedtest-install.sh)
-```
-
-**Rclone 安装配置：**
-```bash
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/rclone-setup.sh)
-```
-
-#### 方式 2：克隆仓库并运行
-
-克隆仓库并运行相应的脚本：
-
-```bash
-git clone https://github.com/Impersonality/VPS-Toolkit.git
-cd VPS-Toolkit
-
-# Zsh 安装
-chmod +x quick-zsh-setup.sh
-./quick-zsh-setup.sh
 
 # Swap 管理
-chmod +x swap-manager.sh
-./swap-manager.sh
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
 
 # SSH 密钥配置
-chmod +x ssh-key-setup.sh
-sudo ./ssh-key-setup.sh
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/ssh-key-setup.sh)
 
 # Speedtest 测速安装
-chmod +x speedtest-install.sh
-sudo ./speedtest-install.sh
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/speedtest-install.sh)
 
 # Rclone 安装配置
-chmod +x rclone-setup.sh
-sudo ./rclone-setup.sh
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/rclone-setup.sh)
 ```
