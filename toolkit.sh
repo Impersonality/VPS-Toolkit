@@ -21,25 +21,64 @@ die()  { printf "${C_RED}[x] %s${C_RESET}\n" "$*" >&2; exit 1; }
 # ── 清屏 ──────────────────────────────────────────────
 cls() { printf '\033[2J\033[H'; }
 
-# ── 读取按键（支持 ESC 检测）─────────────────────────
-# 返回值存入 KEY_PRESSED
-read_key() {
-  KEY_PRESSED=""
-  # 读取一个字符（-s 不回显，-n1 读一个字符）
-  IFS= read -rsn1 KEY_PRESSED 2>/dev/null || true
+# ── 箭头键菜单选择器 ─────────────────────────────────
+# 用法: arrow_menu "提示文字" "选项1" "选项2" ...
+# 结果存入全局变量 MENU_RESULT (0-based 索引)，ESC 返回 -1
+arrow_menu() {
+  local hint="$1"
+  shift
+  local items=("$@")
+  local count=${#items[@]}
+  local sel=0
+  local i lines
 
-  # 如果是 ESC (0x1B)，检查是否还有后续字符（方向键等）
-  if [ "$KEY_PRESSED" = $'\x1b' ]; then
-    # 短暂等待后续字符
-    if IFS= read -rsn1 -t 0.1 _extra 2>/dev/null; then
-      # 有后续字符 → 是方向键/功能键序列，忽略剩余部分
-      IFS= read -rsn1 -t 0.1 _ 2>/dev/null || true
-      KEY_PRESSED="IGNORE"
-    else
-      # 纯 ESC 键
-      KEY_PRESSED="ESC"
+  # 隐藏光标
+  printf '\033[?25l'
+  # 确保退出时恢复光标
+  trap 'printf "\033[?25h"' RETURN
+
+  _draw() {
+    for ((i = 0; i < count; i++)); do
+      if ((i == sel)); then
+        printf "  ${C_CYAN}${C_BOLD} ▸ %s${C_RESET}\n" "${items[$i]}"
+      else
+        printf "     %s\n" "${items[$i]}"
+      fi
+    done
+    printf "\n  ${C_DIM}%s${C_RESET}\n" "$hint"
+    lines=$((count + 2))
+  }
+
+  _draw
+
+  while true; do
+    local key=""
+    IFS= read -rsn1 key 2>/dev/null || true
+
+    if [[ "$key" == $'\x1b' ]]; then
+      local s1="" s2=""
+      IFS= read -rsn1 -t 0.1 s1 2>/dev/null || true
+      IFS= read -rsn1 -t 0.1 s2 2>/dev/null || true
+      if [[ "$s1" == "[" ]]; then
+        case "$s2" in
+          A) ((sel > 0)) && ((sel--)) || true ;;
+          B) ((sel < count - 1)) && ((sel++)) || true ;;
+        esac
+      else
+        # 纯 ESC 键
+        MENU_RESULT=-1
+        return
+      fi
+    elif [[ "$key" == "" ]]; then
+      # Enter 键
+      MENU_RESULT=$sel
+      return
     fi
-  fi
+
+    # 重绘菜单
+    printf "\033[%dA\033[J" "$lines"
+    _draw
+  done
 }
 
 # ── 运行远程脚本 ──────────────────────────────────────
@@ -51,78 +90,59 @@ run_remote_script() {
   log "正在下载并运行 ${script_name}..."
   echo ""
 
-  # 下载脚本内容后用 bash 执行
   local tmp_script
   tmp_script="$(mktemp)"
   if curl -fsSL "$url" -o "$tmp_script" 2>/dev/null; then
-    bash "$tmp_script"
+    bash "$tmp_script" || true
   else
     warn "下载 ${script_name} 失败，请检查网络连接。"
   fi
   rm -f "$tmp_script"
-
-  echo ""
-  printf "${C_DIM}按任意键返回主菜单...${C_RESET}"
-  read_key
-}
-
-# ── 显示主菜单 ────────────────────────────────────────
-show_menu() {
-  cls
-  echo ""
-  printf "${C_CYAN}${C_BOLD}"
-  echo "  ╔══════════════════════════════════════╗"
-  echo "  ║          VPS Toolkit  主菜单          ║"
-  echo "  ╚══════════════════════════════════════╝"
-  printf "${C_RESET}"
-  echo ""
-  printf "  ${C_GREEN}1${C_RESET}) SSH 密钥配置\n"
-  printf "  ${C_GREEN}2${C_RESET}) Swap 管理\n"
-  printf "  ${C_GREEN}3${C_RESET}) Zsh 一键配置\n"
-  printf "  ${C_GREEN}4${C_RESET}) Rclone 配置\n"
-  printf "  ${C_GREEN}5${C_RESET}) Speedtest 安装\n"
-  echo ""
-  printf "  ${C_RED}0${C_RESET}) 退出  ${C_DIM}(ESC 也可退出)${C_RESET}\n"
-  echo ""
-  printf "  ${C_CYAN}请选择 [0-5]：${C_RESET}"
 }
 
 # ── 主循环 ────────────────────────────────────────────
 main() {
-  # 前置检查
   if ! command -v curl >/dev/null 2>&1; then
     die "缺少 curl，请先安装：apt install curl"
   fi
 
-  while true; do
-    show_menu
-    read_key
+  local items=(
+    "SSH 密钥配置"
+    "Swap 管理"
+    "Zsh 一键配置"
+    "Rclone 配置"
+    "Speedtest 安装"
+    "退出"
+  )
 
-    case "$KEY_PRESSED" in
-      1)
-        run_remote_script "ssh-key-setup.sh"
-        ;;
-      2)
-        run_remote_script "swap-manager.sh"
-        ;;
-      3)
-        run_remote_script "quick-zsh-setup.sh"
-        ;;
-      4)
-        run_remote_script "rclone-setup.sh"
-        ;;
-      5)
-        run_remote_script "speedtest-install.sh"
-        ;;
-      0|ESC)
-        cls
-        log "再见！"
-        exit 0
-        ;;
-      *)
-        # 无效输入，继续循环
-        ;;
-    esac
+  local scripts=(
+    "ssh-key-setup.sh"
+    "swap-manager.sh"
+    "quick-zsh-setup.sh"
+    "rclone-setup.sh"
+    "speedtest-install.sh"
+  )
+
+  local last_idx=$(( ${#items[@]} - 1 ))
+
+  while true; do
+    cls
+    printf "\n"
+    printf "  ${C_CYAN}${C_BOLD}"
+    printf "  ╔══════════════════════════════════════╗\n"
+    printf "  ║          VPS Toolkit  主菜单          ║\n"
+    printf "  ╚══════════════════════════════════════╝"
+    printf "${C_RESET}\n\n"
+
+    arrow_menu "↑↓ 移动  Enter 确认  ESC 退出" "${items[@]}"
+
+    if [[ $MENU_RESULT -eq -1 ]] || [[ $MENU_RESULT -eq $last_idx ]]; then
+      cls
+      log "再见！"
+      exit 0
+    fi
+
+    run_remote_script "${scripts[$MENU_RESULT]}"
   done
 }
 

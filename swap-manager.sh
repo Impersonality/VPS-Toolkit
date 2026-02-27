@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -eu
 
 SWAP_FILE="/swapfile"
@@ -126,30 +126,82 @@ delete_swap() {
   show_swap
 }
 
-show_menu() {
-  echo "=============================="
-  echo "Swap 管理菜单"
-  echo "1. 查看当前 swap"
-  echo "2. 增加 swap（单位 M）"
-  echo "3. 删除 swap"
-  echo "0. 返回 / 退出"
-  echo "=============================="
+# ── 箭头键菜单选择器 ─────────────────────────────────
+arrow_menu() {
+  local hint="$1"
+  shift
+  local items=("$@")
+  local count=${#items[@]}
+  local sel=0
+  local i lines
+
+  printf '\033[?25l'
+  trap 'printf "\033[?25h"' RETURN
+
+  _draw() {
+    for ((i = 0; i < count; i++)); do
+      if ((i == sel)); then
+        printf "  \033[1;36m ▸ %s\033[0m\n" "${items[$i]}"
+      else
+        printf "     %s\n" "${items[$i]}"
+      fi
+    done
+    printf "\n  \033[2m%s\033[0m\n" "$hint"
+    lines=$((count + 2))
+  }
+
+  _draw
+
+  while true; do
+    local key=""
+    IFS= read -rsn1 key 2>/dev/null || true
+
+    if [[ "$key" == $'\x1b' ]]; then
+      local s1="" s2=""
+      IFS= read -rsn1 -t 0.1 s1 2>/dev/null || true
+      IFS= read -rsn1 -t 0.1 s2 2>/dev/null || true
+      if [[ "$s1" == "[" ]]; then
+        case "$s2" in
+          A) ((sel > 0)) && ((sel--)) || true ;;
+          B) ((sel < count - 1)) && ((sel++)) || true ;;
+        esac
+      else
+        MENU_RESULT=-1
+        return
+      fi
+    elif [[ "$key" == "" ]]; then
+      MENU_RESULT=$sel
+      return
+    fi
+
+    printf "\033[%dA\033[J" "$lines"
+    _draw
+  done
 }
 
 main() {
   require_root
 
-  while true; do
-    show_menu
-    printf "请输入选项 [0-3]："
-    read -r choice
+  local items=(
+    "查看当前 swap"
+    "增加 swap（单位 M）"
+    "删除 swap"
+    "返回 / 退出"
+  )
 
-    case "$choice" in
-      1) show_swap ;;
-      2) increase_swap ;;
-      3) delete_swap ;;
-      0) echo "已退出 Swap 管理。"; break ;;
-      *) echo "无效选项，请重新输入。" ;;
+  while true; do
+    echo ""
+    echo "=============================="
+    echo " Swap 管理菜单"
+    echo "=============================="
+
+    arrow_menu "↑↓ 移动  Enter 确认  ESC 返回" "${items[@]}"
+
+    case $MENU_RESULT in
+      0) show_swap ;;
+      1) increase_swap ;;
+      2) delete_swap ;;
+      3|-1) break ;;
     esac
     echo ""
   done
