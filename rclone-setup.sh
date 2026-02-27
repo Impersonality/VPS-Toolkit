@@ -7,7 +7,6 @@ warn() { printf '\033[1;33m[!] %s\033[0m\n' "$*" >&2; }
 die()  { printf '\033[1;31m[x] %s\033[0m\n' "$*" >&2; exit 1; }
 
 # ── 配置 ──────────────────────────────────────────────
-GIST_ID="f81cc06df5a1255b0cc34c9b54007729"
 GIST_FILE="rclone.conf"
 RCLONE_CONF_DIR="/root/.config/rclone"
 RCLONE_CONF_PATH="${RCLONE_CONF_DIR}/rclone.conf"
@@ -86,22 +85,24 @@ setup_config() {
     warn "已备份原有配置到：$BACKUP_PATH"
   fi
 
-  # 通过 GitHub API 下载 Gist 配置文件
-  log "正在通过 GitHub API 拉取 rclone.conf..."
+  # 通过 GitHub API 搜索包含 rclone.conf 的 Gist
+  log "正在通过 GitHub API 搜索包含 ${GIST_FILE} 的 Gist..."
 
-  # 第一步：获取 Gist 元数据，提取 raw_url
-  GIST_META="$(curl -fsSL \
+  GISTS_JSON="$(curl -fsSL \
     -H "Authorization: token ${GITHUB_TOKEN}" \
     -H "Accept: application/vnd.github.v3+json" \
-    "https://api.github.com/gists/${GIST_ID}" 2>/dev/null)" || die "API 请求失败，请检查 Token 是否正确且具有 gist 权限。"
+    "https://api.github.com/gists?per_page=100" 2>/dev/null)" || die "API 请求失败，请检查 Token 是否正确且具有 gist 权限。"
 
-  RAW_URL="$(printf '%s' "$GIST_META" | grep -o '"raw_url"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*"raw_url"[[:space:]]*:[[:space:]]*"//; s/"$//')"
+  # 从返回的 Gist 列表中查找文件名包含 rclone.conf 的 raw_url
+  RAW_URL="$(printf '%s' "$GISTS_JSON" | grep -oE '"raw_url"[[:space:]]*:[[:space:]]*"[^"]+/rclone\.conf"' | head -1 | sed 's/.*"raw_url"[[:space:]]*:[[:space:]]*"//; s/"$//')"
 
   if [ -z "$RAW_URL" ]; then
-    die "无法从 Gist 中获取 raw_url，请检查 Gist ID 和 Token。"
+    die "未找到包含 ${GIST_FILE} 的 Gist，请确认你的 GitHub 账号下存在该文件。"
   fi
 
-  # 第二步：下载 raw 文件内容
+  log "已找到 ${GIST_FILE}，正在下载..."
+
+  # 下载 raw 文件内容
   HTTP_CODE="$(curl -sL -w '%{http_code}' \
     -H "Authorization: token ${GITHUB_TOKEN}" \
     "$RAW_URL" \
