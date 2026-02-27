@@ -9,6 +9,7 @@ A collection of simple scripts for VPS management, designed to streamline common
 
 ### Scripts
 
+- **toolkit.sh**: **Unified entry point** — an interactive menu that gives you access to all tools below. Just run one command!
 - **quick-zsh-setup.sh**: Quickly install and configure Zsh, Oh My Zsh, and useful plugins (autosuggestions, syntax highlighting) on your VPS.
 - **swap-manager.sh**: Easily manage swap space (view, add, delete) on your VPS.
 - **ssh-key-setup.sh**: Fetch SSH public keys from GitHub, add them to `authorized_keys`, and enable SSH key authentication on your VPS.
@@ -19,7 +20,13 @@ A collection of simple scripts for VPS management, designed to streamline common
 
 #### Option 1: One-line Installation (Recommended)
 
-Run the script directly without downloading the repository:
+Run the unified toolkit menu with a single command:
+
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/toolkit.sh)
+```
+
+Or run individual scripts directly:
 
 **Quick Zsh Setup:**
 ```bash

@@ -132,21 +132,27 @@ show_menu() {
   echo "1. 查看当前 swap"
   echo "2. 增加 swap（单位 M）"
   echo "3. 删除 swap"
+  echo "0. 返回 / 退出"
   echo "=============================="
 }
 
 main() {
   require_root
-  show_menu
-  printf "请输入选项 [1-3]："
-  read -r choice
 
-  case "$choice" in
-    1) show_swap ;;
-    2) increase_swap ;;
-    3) delete_swap ;;
-    *) echo "无效选项。"; exit 1 ;;
-  esac
+  while true; do
+    show_menu
+    printf "请输入选项 [0-3]："
+    read -r choice
+
+    case "$choice" in
+      1) show_swap ;;
+      2) increase_swap ;;
+      3) delete_swap ;;
+      0) echo "已退出 Swap 管理。"; break ;;
+      *) echo "无效选项，请重新输入。" ;;
+    esac
+    echo ""
+  done
 }
 
 main "$@"

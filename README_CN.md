@@ -8,6 +8,7 @@
 
 ### 脚本列表
 
+- **toolkit.sh**: **统一入口** — 交互式菜单，一条命令即可访问下面所有工具！
 - **quick-zsh-setup.sh**: 快速在 VPS 上安装并配置 Zsh、Oh My Zsh 以及常用插件（自动建议、语法高亮）。
 - **swap-manager.sh**: 轻松管理 VPS 上的 Swap 空间（查看、添加、删除）。
 - **ssh-key-setup.sh**: 从 GitHub 获取 SSH 公钥，添加到 `authorized_keys`，并启用 SSH 密钥登录。
@@ -18,7 +19,13 @@
 
 #### 方式 1：一键运行（推荐）
 
-无需下载整个项目，直接运行脚本：
+运行统一菜单入口，一条命令搞定：
+
+```bash
+bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/toolkit.sh)
+```
+
+也可以单独运行各脚本：
 
 **Zsh 快速安装：**
 ```bash
