@@ -101,7 +101,7 @@ run_remote_script() {
 
   echo ""
   printf "  ${C_DIM}按回车键返回主菜单...${C_RESET}"
-  read -r
+  read -r </dev/tty
 }
 
 # ── 主循环 ────────────────────────────────────────────
