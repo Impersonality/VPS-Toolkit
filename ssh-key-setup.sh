@@ -145,6 +145,19 @@ enable_pubkey_auth() {
     changed=1
   fi
 
+  # PasswordAuthentication no（关闭密码登录）
+  if grep -qE '^\s*PasswordAuthentication\s+no' "$sshd_config"; then
+    log "PasswordAuthentication 已关闭"
+  else
+    if grep -qE '^\s*#?\s*PasswordAuthentication' "$sshd_config"; then
+      sed -i 's/^[[:space:]]*#*[[:space:]]*PasswordAuthentication.*/PasswordAuthentication no/' "$sshd_config"
+    else
+      printf '\nPasswordAuthentication no\n' >> "$sshd_config"
+    fi
+    log "已设置 PasswordAuthentication no（关闭密码登录）"
+    changed=1
+  fi
+
   # AuthorizedKeysFile（确保包含默认路径）
   if grep -qE '^\s*AuthorizedKeysFile' "$sshd_config"; then
     log "AuthorizedKeysFile 已配置"
@@ -186,6 +199,7 @@ main() {
 
   echo ""
   log "全部完成！"
+  warn "密码登录已关闭，仅允许密钥登录。"
   warn "请在新终端中测试 SSH 密钥登录，确认成功后再关闭当前会话。"
 }
 

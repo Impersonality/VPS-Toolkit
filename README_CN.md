@@ -11,7 +11,7 @@
 - **toolkit.sh**: **统一入口** — 交互式菜单，一条命令即可访问下面所有工具！
 - **quick-zsh-setup.sh**: 快速在 VPS 上安装并配置 Zsh、Oh My Zsh 以及常用插件（自动建议、语法高亮）。
 - **swap-manager.sh**: 轻松管理 VPS 上的 Swap 空间（查看、添加、删除）。
-- **ssh-key-setup.sh**: 从 GitHub 获取 SSH 公钥，添加到 `authorized_keys`，并启用 SSH 密钥登录。
+- **ssh-key-setup.sh**: 从 GitHub 获取 SSH 公钥，添加到 `authorized_keys`，启用 SSH 密钥登录，并关闭密码登录以增强安全性。
 - **speedtest-install.sh**: 安装 Ookla 官方 Speedtest CLI 测速工具。安装前自动检测系统兼容性（如 Ubuntu 24.04 不受支持会提示）。
 - **rclone-setup.sh**: 在 Debian/Ubuntu 系统上安装 rclone 并自动配置预设的 `rclone.conf`。如已有配置文件会自动备份。
 
