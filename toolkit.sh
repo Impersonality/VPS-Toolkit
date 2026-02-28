@@ -61,8 +61,8 @@ arrow_menu() {
       IFS= read -rsn1 -t 0.1 s2 2>/dev/null || true
       if [[ "$s1" == "[" ]]; then
         case "$s2" in
-          A) ((sel > 0)) && ((sel--)) || true ;;
-          B) ((sel < count - 1)) && ((sel++)) || true ;;
+          A) sel=$(( (sel - 1 + count) % count )) ;;
+          B) sel=$(( (sel + 1) % count )) ;;
         esac
       else
         # 纯 ESC 键
