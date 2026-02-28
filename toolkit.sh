@@ -98,6 +98,10 @@ run_remote_script() {
     warn "下载 ${script_name} 失败，请检查网络连接。"
   fi
   rm -f "$tmp_script"
+
+  echo ""
+  printf "  ${C_DIM}按回车键返回主菜单...${C_RESET}"
+  read -r
 }
 
 # ── 主循环 ────────────────────────────────────────────
