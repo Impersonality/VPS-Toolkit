@@ -107,23 +107,17 @@ run_remote_script() {
 # ── 常用命令小抄 ──────────────────────────────────────
 show_common_commands() {
   cls
-  printf "\n"
-  printf "  ${C_CYAN}${C_BOLD}"
-  printf "  ╔══════════════════════════════════════╗\n"
-  printf "  ║            常用命令小抄             ║\n"
-  printf "  ╚══════════════════════════════════════╝"
-  printf "${C_RESET}\n\n"
-
-  printf "  ${C_BOLD}1. rclone查看r2 docker目录${C_RESET}\n"
-  printf "  rclone tree r2:kg3773/vps-backup/Softwares --level 1\n\n"
-
-  printf "  ${C_BOLD}2. rclone copy到当前目录${C_RESET}\n"
-  printf "  for d in miaomiaowu clip-relay qinglong; do\n"
-  printf "    rclone copy -P \"r2:kg3773/vps-backup/Softwares/\$d\" \"./\$d\"\n"
-  printf "  done\n\n"
-
-  printf "  ${C_DIM}按回车键返回主菜单...${C_RESET}"
-  read -r </dev/tty
+  printf '%s\n' \
+    '常用命令小抄' \
+    '' \
+    '1. rclone查看r2 docker目录' \
+    'rclone tree r2:kg3773/vps-backup/Softwares --level 1' \
+    '' \
+    '2. rclone copy到当前目录' \
+    'for d in miaomiaowu clip-relay qinglong; do' \
+    '  rclone copy -P "r2:kg3773/vps-backup/Softwares/$d" "./$d"' \
+    'done'
+  exit 0
 }
 
 # ── 主循环 ────────────────────────────────────────────
