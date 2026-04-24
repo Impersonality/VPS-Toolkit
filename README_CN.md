@@ -8,7 +8,7 @@
 
 ### 脚本列表
 
-- **toolkit.sh**: **统一入口** — 交互式菜单，一条命令即可访问下面所有工具！
+- **toolkit.sh**: **统一入口** — 交互式菜单，一条命令即可访问 SSH 密钥配置、Swap 管理、Zsh 一键配置、Rclone配置下载、常用命令小抄和 Speedtest 安装。
 - **quick-zsh-setup.sh**: 快速在 VPS 上安装并配置 Zsh、Oh My Zsh 以及常用插件（自动建议、语法高亮）。
 - **swap-manager.sh**: 轻松管理 VPS 上的 Swap 空间（查看、添加、删除）。
 - **ssh-key-setup.sh**: 从 GitHub 获取 SSH 公钥，添加到 `authorized_keys`，启用 SSH 密钥登录，并关闭密码登录以增强安全性。

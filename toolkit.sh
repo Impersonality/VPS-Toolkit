@@ -104,6 +104,28 @@ run_remote_script() {
   read -r </dev/tty
 }
 
+# ── 常用命令小抄 ──────────────────────────────────────
+show_common_commands() {
+  cls
+  printf "\n"
+  printf "  ${C_CYAN}${C_BOLD}"
+  printf "  ╔══════════════════════════════════════╗\n"
+  printf "  ║            常用命令小抄             ║\n"
+  printf "  ╚══════════════════════════════════════╝"
+  printf "${C_RESET}\n\n"
+
+  printf "  ${C_BOLD}1. rclone查看r2 docker目录${C_RESET}\n"
+  printf "  rclone tree r2:kg3773/vps-backup/Softwares --level 1\n\n"
+
+  printf "  ${C_BOLD}2. rclone copy到当前目录${C_RESET}\n"
+  printf "  for d in miaomiaowu clip-relay qinglong; do\n"
+  printf "    rclone copy -P \"r2:kg3773/vps-backup/Softwares/\$d\" \"./\$d\"\n"
+  printf "  done\n\n"
+
+  printf "  ${C_DIM}按回车键返回主菜单...${C_RESET}"
+  read -r </dev/tty
+}
+
 # ── 主循环 ────────────────────────────────────────────
 main() {
   if ! command -v curl >/dev/null 2>&1; then
@@ -114,17 +136,10 @@ main() {
     "SSH 密钥配置"
     "Swap 管理"
     "Zsh 一键配置"
-    "Rclone 配置"
+    "Rclone配置下载"
+    "常用命令"
     "Speedtest 安装"
     "退出"
-  )
-
-  local scripts=(
-    "ssh-key-setup.sh"
-    "swap-manager.sh"
-    "quick-zsh-setup.sh"
-    "rclone-setup.sh"
-    "speedtest-install.sh"
   )
 
   local last_idx=$(( ${#items[@]} - 1 ))
@@ -146,7 +161,14 @@ main() {
       exit 0
     fi
 
-    run_remote_script "${scripts[$MENU_RESULT]}"
+    case "$MENU_RESULT" in
+      0) run_remote_script "ssh-key-setup.sh" ;;
+      1) run_remote_script "swap-manager.sh" ;;
+      2) run_remote_script "quick-zsh-setup.sh" ;;
+      3) run_remote_script "rclone-setup.sh" ;;
+      4) show_common_commands ;;
+      5) run_remote_script "speedtest-install.sh" ;;
+    esac
   done
 }
 

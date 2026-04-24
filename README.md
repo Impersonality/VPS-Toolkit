@@ -9,7 +9,7 @@ A collection of simple scripts for VPS management, designed to streamline common
 
 ### Scripts
 
-- **toolkit.sh**: **Unified entry point** — an interactive menu that gives you access to all tools below. Just run one command!
+- **toolkit.sh**: **Unified entry point** — an interactive menu that gives you access to SSH key setup, swap management, Zsh setup, `rclone` config download, a small common-commands cheatsheet, and Speedtest install. Just run one command!
 - **quick-zsh-setup.sh**: Quickly install and configure Zsh, Oh My Zsh, and useful plugins (autosuggestions, syntax highlighting) on your VPS.
 - **swap-manager.sh**: Easily manage swap space (view, add, delete) on your VPS.
 - **ssh-key-setup.sh**: Fetch SSH public keys from GitHub, add them to `authorized_keys`, enable SSH key authentication, and disable password login for enhanced security.
