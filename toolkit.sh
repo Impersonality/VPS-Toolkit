@@ -116,7 +116,11 @@ show_common_commands() {
     '2. rclone copy到当前目录' \
     'for d in miaomiaowu clip-relay qinglong; do' \
     '  rclone copy -P "r2:kg3773/vps-backup/Softwares/$d" "./$d"' \
-    'done'
+    'done' \
+    '' \
+    '3. cron 配置 Softwares 上传到 r2' \
+    'crontab -e' \
+    '0 2 * * * /usr/bin/rclone sync /root/Softwares r2:kg3773/vps-backup/qiniu --config /root/.config/rclone/rclone.conf >> /var/log/rclone-backup.log 2>&1'
   exit 0
 }
 
