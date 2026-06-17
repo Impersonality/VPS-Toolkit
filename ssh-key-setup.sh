@@ -2,6 +2,8 @@
 set -eu
 
 GITHUB_USER="Impersonality"
+SSH_KEY_COMMENTS_FILE="ssh-key-comments.md"
+SSH_KEY_COMMENTS_URL="https://raw.githubusercontent.com/${GITHUB_USER}/VPS-Toolkit/main/${SSH_KEY_COMMENTS_FILE}"
 
 # ── 日志 ──────────────────────────────────────────────
 log()  { printf '\033[1;32m[+] %s\033[0m\n' "$*" >&2; }
@@ -34,9 +36,46 @@ fetch_keys() {
   echo "$keys"
 }
 
+# ── 获取公钥备注 ──────────────────────────────────────
+parse_key_comments() {
+  awk '
+    /^[[:space:]]*[0-9]+[.)][[:space:]]*/ {
+      sub(/^[[:space:]]*[0-9]+[.)][[:space:]]*/, "")
+      sub(/[[:space:]]+$/, "")
+      if ($0 != "") print
+    }
+  '
+}
+
+fetch_key_comments() {
+  script_dir="$(CDPATH= cd "$(dirname "$0")" 2>/dev/null && pwd || pwd)"
+  local_comments="${script_dir}/${SSH_KEY_COMMENTS_FILE}"
+
+  if [ -f "$local_comments" ]; then
+    log "正在读取本地公钥备注：$local_comments"
+    parse_key_comments < "$local_comments"
+    return 0
+  fi
+
+  log "正在从 $SSH_KEY_COMMENTS_URL 获取公钥备注..."
+  comments="$(curl -fsSL "$SSH_KEY_COMMENTS_URL" 2>/dev/null)" || {
+    warn "无法获取公钥备注文件，将使用公钥自带注释或尾部片段。"
+    return 0
+  }
+
+  parsed_comments="$(printf '%s\n' "$comments" | parse_key_comments)"
+  if [ -z "$parsed_comments" ]; then
+    warn "公钥备注文件没有可用的编号列表，将使用公钥自带注释或尾部片段。"
+    return 0
+  fi
+
+  printf '%s\n' "$parsed_comments"
+}
+
 # ── 选择公钥 ──────────────────────────────────────────
 select_key() {
   keys="$1"
+  key_comments="${2:-}"
   total="$(echo "$keys" | wc -l)"
 
   echo ""
@@ -47,8 +86,10 @@ select_key() {
   i=1
   echo "$keys" | while IFS= read -r line; do
     key_type="$(echo "$line" | awk '{print $1}')"
-    nf="$(echo "$line" | awk '{print NF}')"
-    if [ "$nf" -gt 2 ]; then
+    md_comment="$(printf '%s\n' "$key_comments" | sed -n "${i}p")"
+    if [ -n "$md_comment" ]; then
+      comment="$md_comment"
+    elif [ "$(echo "$line" | awk '{print NF}')" -gt 2 ]; then
       # 有注释字段，显示第 3 个字段起的所有内容
       comment="$(echo "$line" | awk '{for(i=3;i<=NF;i++) printf "%s ", $i}')"
     else
@@ -193,7 +234,8 @@ main() {
   log "GitHub 用户：$GITHUB_USER"
 
   keys="$(fetch_keys "$GITHUB_USER")"
-  select_key "$keys"
+  key_comments="$(fetch_key_comments)"
+  select_key "$keys" "$key_comments"
   install_keys
   enable_pubkey_auth
 
