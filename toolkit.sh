@@ -111,16 +111,22 @@ show_common_commands() {
     '常用命令小抄' \
     '' \
     '1. rclone查看r2 docker目录' \
-    'rclone tree r2:kg3773/vps-backup/Softwares --level 1' \
+    'rclone tree r2:kg3773/vps-backup --level 1' \
     '' \
-    '2. rclone copy到当前目录' \
-    'for d in miaomiaowu clip-relay qinglong; do' \
-    '  rclone copy -P "r2:kg3773/vps-backup/Softwares/$d" "./$d"' \
-    'done' \
+    '2. 停止正在运行的容器，打包目录后恢复' \
+    'containers=$(docker ps -q); [ -n "$containers" ] && printf "%s\n" "$containers" | xargs -r docker stop; tar -czvf /root/vps_docker_backup.tar.gz -C /root docker_local Softwares; [ -n "$containers" ] && printf "%s\n" "$containers" | xargs -r docker start' \
     '' \
-    '3. cron 配置 Softwares 上传到 r2' \
+    '3. rclone上传到remote' \
+    'rclone copy /root/vps_docker_backup.tar.gz r2:kg3773/vps-backup/' \
+    '' \
+    '4. rclone下载到本地' \
+    'rclone copy r2:kg3773/vps-backup/vps_docker_backup.tar.gz /root/' \
+    '' \
+    '5. 定时器备份' \
     'crontab -e' \
-    '0 2 * * * /usr/bin/rclone sync /root/Softwares r2:kg3773/vps-backup/qiniu --config /root/.config/rclone/rclone.conf >> /var/log/rclone-backup.log 2>&1'
+    "0 3 * * 1 /bin/sh -c 'containers=\$(/usr/bin/docker ps -q); [ -n \"\$containers\" ] && echo \"\$containers\" | /usr/bin/xargs -r /usr/bin/docker stop; /usr/bin/tar -czvf /root/vps_docker_backup.tar.gz -C /root docker_local Softwares && /usr/bin/rclone copy /root/vps_docker_backup.tar.gz r2:kg3773/vps-backup/ --config /root/.config/rclone/rclone.conf; [ -n \"\$containers\" ] && echo \"\$containers\" | /usr/bin/xargs -r /usr/bin/docker start' >> /var/log/rclone-backup.log 2>&1" \
+    '' \
+    '说明：上面已统一使用 r2:kg3773/vps-backup/；如果你的实际 remote 是 cf-r2:vps-backups/，请整组命令统一替换。'
   exit 0
 }
 
