@@ -4,6 +4,7 @@ set -euo pipefail
 # 统一插件列表，避免在多个位置重复写死。
 PLUGINS=(git zsh-autosuggestions zsh-syntax-highlighting)
 PLUGIN_LINE="plugins=(${PLUGINS[*]})"
+GITHUB_PROXY="${VPS_GITHUB_PROXY:-}"
 
 log() { printf '\033[1;32m[+] %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m[!] %s\033[0m\n' "$*"; }
@@ -12,6 +13,22 @@ die() { printf '\033[1;31m[x] %s\033[0m\n' "$*" >&2; exit 1; }
 # 校验命令是否存在，不存在则直接退出。
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "Missing command: $1"
+}
+
+# GitHub 加速地址采用“代理前缀 + 完整原始地址”的格式。
+github_url() {
+  local url="$1"
+  if [ -n "$GITHUB_PROXY" ]; then
+    printf '%s/%s\n' "${GITHUB_PROXY%/}" "$url"
+  else
+    printf '%s\n' "$url"
+  fi
+}
+
+clone_repo() {
+  local url="$1"
+  local target="$2"
+  git clone --depth=1 "$(github_url "$url")" "$target"
 }
 
 # 仅处理本脚本目标发行版：Debian/Ubuntu (apt) 与 Alpine (apk)。
@@ -56,7 +73,7 @@ install_oh_my_zsh() {
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
     log "Installing oh-my-zsh"
     RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
-      sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      sh -c "$(curl -fsSL "$(github_url https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)")" "" --unattended
   else
     log "oh-my-zsh already installed"
   fi
@@ -68,13 +85,13 @@ install_plugins() {
 
   if [ ! -d "$custom/plugins/zsh-autosuggestions" ]; then
     log "Installing zsh-autosuggestions"
-    git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
+    clone_repo https://github.com/zsh-users/zsh-autosuggestions \
       "$custom/plugins/zsh-autosuggestions"
   fi
 
   if [ ! -d "$custom/plugins/zsh-syntax-highlighting" ]; then
     log "Installing zsh-syntax-highlighting"
-    git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
+    clone_repo https://github.com/zsh-users/zsh-syntax-highlighting \
       "$custom/plugins/zsh-syntax-highlighting"
   fi
 }

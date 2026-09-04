@@ -1,0 +1,5 @@
+# GitHub 加速地址应以 https:// 开头，留空表示直连 GitHub。
+VPS_GITHUB_PROXY=""
+
+# SSH Key 功能默认读取该 GitHub 用户的公开密钥。
+VPS_GITHUB_USER="Impersonality"

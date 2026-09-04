@@ -1,9 +1,10 @@
 #!/bin/sh
 set -eu
 
-GITHUB_USER="Impersonality"
+GITHUB_USER="${VPS_GITHUB_USER:-Impersonality}"
+GITHUB_PROXY="${VPS_GITHUB_PROXY:-}"
 SSH_KEY_COMMENTS_FILE="ssh-key-comments.md"
-SSH_KEY_COMMENTS_URL="https://raw.githubusercontent.com/${GITHUB_USER}/VPS-Toolkit/main/${SSH_KEY_COMMENTS_FILE}"
+SSH_KEY_COMMENTS_URL="https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/${SSH_KEY_COMMENTS_FILE}"
 
 # ── 日志 ──────────────────────────────────────────────
 log()  { printf '\033[1;32m[+] %s\033[0m\n' "$*" >&2; }
@@ -21,13 +22,23 @@ require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "缺少命令：$1，请先安装。"
 }
 
+# GitHub 公钥和备注文件共用同一个可选代理。
+github_url() {
+  url="$1"
+  if [ -n "$GITHUB_PROXY" ]; then
+    printf '%s/%s\n' "${GITHUB_PROXY%/}" "$url"
+  else
+    printf '%s\n' "$url"
+  fi
+}
+
 # ── 获取 GitHub 公钥 ──────────────────────────────────
 fetch_keys() {
   username="$1"
   url="https://github.com/${username}.keys"
   log "正在从 $url 获取公钥..."
 
-  keys="$(curl -fsSL "$url" 2>/dev/null)" || die "无法获取公钥，请检查用户名或网络。"
+  keys="$(curl -fsSL "$(github_url "$url")" 2>/dev/null)" || die "无法获取公钥，请检查用户名或网络。"
 
   if [ -z "$keys" ]; then
     die "该 GitHub 用户没有公开的 SSH 公钥。"
@@ -58,7 +69,7 @@ fetch_key_comments() {
   fi
 
   log "正在从 $SSH_KEY_COMMENTS_URL 获取公钥备注..."
-  comments="$(curl -fsSL "$SSH_KEY_COMMENTS_URL" 2>/dev/null)" || {
+  comments="$(curl -fsSL "$(github_url "$SSH_KEY_COMMENTS_URL")" 2>/dev/null)" || {
     warn "无法获取公钥备注文件，将使用公钥自带注释或尾部片段。"
     return 0
   }
@@ -166,12 +177,14 @@ install_keys() {
 # ── 启用 SSH 公钥登录 ─────────────────────────────────
 enable_pubkey_auth() {
   sshd_config="/etc/ssh/sshd_config"
+  sshd_backup="${sshd_config}.vps-toolkit.bak"
 
   if [ ! -f "$sshd_config" ]; then
     die "未找到 $sshd_config，请确认已安装 OpenSSH Server。"
   fi
 
   changed=0
+  cp "$sshd_config" "$sshd_backup"
 
   # PubkeyAuthentication yes
   if grep -qE '^\s*PubkeyAuthentication\s+yes' "$sshd_config"; then
@@ -212,6 +225,11 @@ enable_pubkey_auth() {
 
   # 重启 sshd
   if [ "$changed" -eq 1 ]; then
+    if ! sshd -t; then
+      cp "$sshd_backup" "$sshd_config"
+      die "sshd 配置校验失败，已恢复原配置。"
+    fi
+
     log "正在重启 sshd 服务..."
     if command -v systemctl >/dev/null 2>&1; then
       systemctl restart sshd 2>/dev/null || systemctl restart ssh 2>/dev/null || warn "sshd 重启失败，请手动重启。"
@@ -224,12 +242,14 @@ enable_pubkey_auth() {
   else
     log "sshd 配置无需修改"
   fi
+  rm -f "$sshd_backup"
 }
 
 # ── 主流程 ────────────────────────────────────────────
 main() {
   require_root
   require_cmd curl
+  require_cmd sshd
 
   log "GitHub 用户：$GITHUB_USER"
 

@@ -3,42 +3,70 @@
 [English](#english) | [中文](README_CN.md)
 
 <a name="english"></a>
-## English
 
-A collection of simple scripts for VPS management, designed to streamline common tasks on a newly purchased server.
+A small, locally installed menu for VPS setup and maintenance. Run `vps`, move
+with the Up and Down keys, press Enter to execute, and press Esc to go back. It
+does not use a Go TUI or switch to an alternate terminal screen.
 
-### Scripts
-
-- **toolkit.sh**: **Unified entry point** — an interactive menu that gives you access to SSH key setup, swap management, Zsh setup, `rclone` config download, a small common-commands cheatsheet, and Speedtest install. Just run one command!
-- **quick-zsh-setup.sh**: Quickly install and configure Zsh, Oh My Zsh, and useful plugins (autosuggestions, syntax highlighting) on your VPS.
-- **swap-manager.sh**: Easily manage swap space (view, add, delete) on your VPS.
-- **ssh-key-setup.sh**: Fetch SSH public keys from GitHub, add them to `authorized_keys`, enable SSH key authentication, and disable password login for enhanced security.
-- **speedtest-install.sh**: Install the official Ookla Speedtest CLI. Automatically checks OS compatibility before installation (e.g. Ubuntu 24.04 is not supported).
-- **rclone-setup.sh**: Install rclone and configure it with a predefined `rclone.conf` on Debian/Ubuntu systems. Backs up any existing configuration automatically.
-
-### Usage
-
-Run the unified toolkit menu with a single command:
+## Install
 
 ```bash
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/toolkit.sh)
+bash <(curl -fsSL https://sh.3773774.xyz)
 ```
 
-Or run individual scripts directly:
+GitHub fallback:
 
 ```bash
-# Quick Zsh Setup
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/quick-zsh-setup.sh)
-
-# Swap Manager
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/swap-manager.sh)
-
-# SSH Key Setup
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/ssh-key-setup.sh)
-
-# Speedtest Install
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/speedtest-install.sh)
-
-# Rclone Setup
-bash <(curl -L https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/rclone-setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/install.sh)
 ```
+
+Run the menu after installation:
+
+```bash
+vps
+```
+
+The toolkit is stored locally. Normal actions do not download the toolkit
+again, and update and uninstall actions are available from the menu. After
+installation, `vps` is the only command you need to remember.
+
+## Menu Controls
+
+- `Up` / `Down`: move between items
+- `Enter`: execute the selected item
+- `Esc`: return to the previous menu, or exit from the main menu
+
+## GitHub Proxy
+
+Set a proxy prefix in `/etc/vps-toolkit/config` when GitHub is not directly
+reachable:
+
+```bash
+VPS_GITHUB_PROXY="https://ghfast.top/"
+```
+
+Example installation through the same proxy:
+
+```bash
+curl -fsSL "https://ghfast.top/https://raw.githubusercontent.com/Impersonality/VPS-Toolkit/main/install.sh" \
+  | VPS_GITHUB_PROXY="https://ghfast.top/" bash
+```
+
+The proxy is used only for public GitHub files. The authenticated GitHub Gist
+request used by the rclone setup is sent directly to GitHub to avoid exposing
+the token to a public proxy.
+
+Public proxy services are not controlled by this project. Scripts executed as
+root should only be downloaded through a proxy you trust.
+
+## Included Features
+
+- SSH public key setup
+- Swap management
+- Zsh and Oh My Zsh setup
+- rclone installation and private Gist configuration
+- Personal backup command reference
+- Debian 12, Debian 13 and Ubuntu 24.04 reinstall presets
+- NodeQuality, TcpQuality, tcpfit, Fusion Monster and unlock tests
+- Singbox installer from 233boy
+- Docker and WARP installers

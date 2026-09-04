@@ -126,85 +126,39 @@ delete_swap() {
   show_swap
 }
 
-# ── 箭头键菜单选择器 ─────────────────────────────────
-arrow_menu() {
-  local hint="$1"
-  shift
-  local items=("$@")
-  local count=${#items[@]}
-  local sel=0
-  local i lines
-
-  printf '\033[?25l'
-  trap 'printf "\033[?25h"' RETURN
-
-  _draw() {
-    for ((i = 0; i < count; i++)); do
-      if ((i == sel)); then
-        printf "  \033[1;36m ▸ %s\033[0m\n" "${items[$i]}"
-      else
-        printf "     %s\n" "${items[$i]}"
-      fi
-    done
-    printf "\n  \033[2m%s\033[0m\n" "$hint"
-    lines=$((count + 2))
-  }
-
-  _draw
-
+# 数字菜单不重绘终端，在低性能 VPS 和高延迟 SSH 中更稳定。
+show_menu() {
   while true; do
-    local key=""
-    IFS= read -rsn1 key 2>/dev/null || true
+    printf '%s\n' \
+      '' \
+      'Swap manager' \
+      '------------' \
+      '1) Show swap' \
+      '2) Add swap' \
+      '3) Delete swap' \
+      '0) Back'
+    read -r -p '> ' choice
 
-    if [[ "$key" == $'\x1b' ]]; then
-      local s1="" s2=""
-      IFS= read -rsn1 -t 0.1 s1 2>/dev/null || true
-      IFS= read -rsn1 -t 0.1 s2 2>/dev/null || true
-      if [[ "$s1" == "[" ]]; then
-        case "$s2" in
-          A) ((sel > 0)) && ((sel--)) || true ;;
-          B) ((sel < count - 1)) && ((sel++)) || true ;;
-        esac
-      else
-        MENU_RESULT=-1
-        return
-      fi
-    elif [[ "$key" == "" ]]; then
-      MENU_RESULT=$sel
-      return
-    fi
-
-    printf "\033[%dA\033[J" "$lines"
-    _draw
+    case "$choice" in
+      1) show_swap ;;
+      2) increase_swap ;;
+      3) delete_swap ;;
+      0) return ;;
+      *) echo "Unknown selection: $choice" ;;
+    esac
   done
 }
 
 main() {
   require_root
 
-  local items=(
-    "查看当前 swap"
-    "增加 swap（单位 M）"
-    "删除 swap"
-    "返回 / 退出"
-  )
-
-  while true; do
-    echo ""
-    echo "=============================="
-    echo " Swap 管理菜单"
-    echo "=============================="
-
-    arrow_menu "↑↓ 移动  Enter 确认  ESC 返回" "${items[@]}"
-
-    case $MENU_RESULT in
-      0) show_swap ;;
-      1) increase_swap ;;
-      2) delete_swap ;;
-      3|-1) break ;;
-    esac
-    echo ""
-  done
+  case "${1:-}" in
+    show) show_swap ;;
+    add) increase_swap ;;
+    delete) delete_swap ;;
+    '') show_menu ;;
+    *) echo "Usage: vps swap [show|add|delete]" >&2; exit 1 ;;
+  esac
 }
 
 main "$@"
