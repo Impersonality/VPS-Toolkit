@@ -141,8 +141,16 @@ confirm() {
 }
 
 pause() {
-  printf '\n按 Enter 返回...'
-  read -r
+  local key
+  printf '\n按 Enter 或 Esc 返回...'
+  while true; do
+    key=""
+    # 静默读取单个按键，避免 Esc 被终端回显为 ^[。
+    IFS= read -rsn1 key 2>/dev/null || return
+    case "$key" in
+      ''|$'\x1b') return ;;
+    esac
+  done
 }
 
 run_and_pause() {
