@@ -41,6 +41,21 @@ detect_os() {
   esac
 }
 
+# 官方安装包使用 ZIP 格式，缺少所有受支持的解压工具时安装 unzip。
+ensure_unzip_tool() {
+  for tool in unzip 7z busybox; do
+    if command -v "$tool" >/dev/null 2>&1; then
+      return 0
+    fi
+  done
+
+  require_cmd apt-get
+  log "未检测到 ZIP 解压工具，正在安装 unzip..."
+  apt-get update || die "更新软件包索引失败，请检查 APT 软件源和网络连接。"
+  apt-get install -y unzip || die "安装 unzip 失败，请检查上方 APT 日志。"
+  require_cmd unzip
+}
+
 # ── 安装 rclone ───────────────────────────────────────
 install_rclone() {
   if command -v rclone >/dev/null 2>&1; then
@@ -50,8 +65,13 @@ install_rclone() {
     return 0
   fi
 
+  require_cmd bash
+  ensure_unzip_tool
+
   log "正在使用官方脚本安装 rclone..."
-  curl -fsSL https://rclone.org/install.sh | bash
+  # 保留官方脚本的错误输出，并明确提示安装阶段失败。
+  curl -fsSL https://rclone.org/install.sh | bash \
+    || die "rclone 官方安装脚本执行失败，请检查上方日志。"
 
   if command -v rclone >/dev/null 2>&1; then
     log "rclone 安装成功！"
